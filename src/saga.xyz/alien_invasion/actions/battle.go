@@ -6,7 +6,7 @@ import (
 	"saga.xyz/alien_invasion/maths"
 )
 
-func (w *T_World) CheckForDestruction() (completed bool) {
+func (w *T_World) CheckForCasualties() (completed bool) {
 	for x, _ := range w.Atlas {
 		for y, _ := range w.Atlas[x] {
 			cityname := w.Atlas[x][y]
@@ -35,7 +35,7 @@ func (w *T_World) CheckForDestruction() (completed bool) {
 }
 
 // Assumption: A move off road is not allowed and is a lost/wasted turn
-func (w *T_World) Move() {
+func (w *T_World) Advance() {
 	var newpos int
 
 	for id, _ := range w.Invaders {

@@ -1,4 +1,7 @@
-hartsp2000-05/26/2022-19:45-Version 0.0.2
+hartsp2000-05/27/2022-11:51-Version 0.1.0
+  * First release of alien simulator -- have fun!!
+
+hartsp2000-05/27/2022-03:21-Version 0.0.2
   * Proof of concept --functional-- still needs revisions
 
 hartsp2000-05/26/2022-19:45-Version 0.0.1

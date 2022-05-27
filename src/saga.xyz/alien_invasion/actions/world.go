@@ -171,11 +171,12 @@ func (world *T_World) Genesis(c config.T_Config) (err error) {
 		world.Atlas[x] = make(map[int]string, maxsize)
 	}
 
-	// Populate map with cities
+	// Transform with offset and Populate map with cities
 	for city, data := range world.Cities {
 		x := data.Coordinates.X + offset
 		y := data.Coordinates.Y + offset
 		world.Atlas[x][y] = city
+		world.Cities[city] = T_CityData{Coordinates: T_CityCoordinates{x, y}}
 	}
 
 	// Create Alien Invaders
@@ -218,25 +219,43 @@ func (world *T_World) BreakRoad(x, y int) {
 func (world *T_World) PostApocalypse(c config.T_Config) error {
 	var output string
 
-	for _, val := range world.CitiesRelativeTo {
-		output += fmt.Sprintf("%s", val.City)
-
-		if len(val.North) > 0 {
-			output += fmt.Sprintf(" north=%s", val.North)
+	for x := 0; x < world.GridSize; x++ {
+		for y := 0; y < world.GridSize; y++ {
+			if _, ok := world.Atlas[x][y]; !ok {
+				continue
+			}
+			city := world.Atlas[x][y]
+			output += fmt.Sprintf("%s", city)
+			// North
+			for posY := y - 1; posY > 0; posY-- {
+				if len(world.Atlas[x][posY]) > 0 {
+					output += fmt.Sprintf(" north=%s", world.Atlas[x][posY])
+					break
+				}
+			}
+			// West
+			for posX := x + 1; posX < world.GridSize; posX++ {
+				if len(world.Atlas[posX][y]) > 0 {
+					output += fmt.Sprintf(" west=%s", world.Atlas[posX][y])
+					break
+				}
+			}
+			// South
+			for posY := y + 1; posY < world.GridSize; posY++ {
+				if len(world.Atlas[x][posY]) > 0 {
+					output += fmt.Sprintf(" south=%s", world.Atlas[x][posY])
+					break
+				}
+			}
+			// East
+			for posX := x - 1; posX > 0; posX-- {
+				if len(world.Atlas[posX][y]) > 0 {
+					output += fmt.Sprintf(" east=%s", world.Atlas[posX][y])
+					break
+				}
+			}
+			output += fmt.Sprintf("\n")
 		}
-
-		if len(val.West) > 0 {
-			output += fmt.Sprintf(" west=%s", val.West)
-		}
-
-		if len(val.South) > 0 {
-			output += fmt.Sprintf(" south=%s", val.South)
-		}
-
-		if len(val.East) > 0 {
-			output += fmt.Sprintf(" east=%s", val.East)
-		}
-		output += fmt.Sprintf("\n")
 	}
 
 	file, err := os.Create((c.MapOutfile))
