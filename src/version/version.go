@@ -1,6 +1,6 @@
 package version
 
 var (
-	VERSION string = "0.0.0"
-	BUILDID string = "67c09c88d1768610c968dcb4a4b39edaebc63100-20220524115906"
+	VERSION string = "0.0.1"
+	BUILDID string = "2aff20c7b2f9325efffaf297561778f22844417b-20220526194446"
 )

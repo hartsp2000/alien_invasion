@@ -17,7 +17,7 @@ format:
 
 vet:
 	@echo "========== Vetting Golang artifacts =========="
-	@for file_to_test in `find . -name *.go -print`; do { printf "Vetting $${file_to_test}..."; $(GO) vet $${file_to_test}; if [ $$? -ne 0 ]; then echo \"Issue found in Golang code. Please fix them and try again.\"; exit 2; else echo "[ OK ]"; fi } done
+	@for file_to_test in `find . -name *.go -print`; do { printf "Vetting $${file_to_test}..."; $(GO) vet $${file_to_test}; if [ $$? -eq 0 ]; then echo "[ OK ]"; fi } done
 
 bin/${APPLICATION}: src/version/version.go
 	@echo "========== Compiling artifacts for: $@ =========="

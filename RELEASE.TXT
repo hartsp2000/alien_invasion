@@ -1,2 +1,8 @@
+hartsp2000-05/26/2022-19:45-Version 0.0.2
+  * Proof of concept --functional-- still needs revisions
+
+hartsp2000-05/26/2022-19:45-Version 0.0.1
+  * Added alien map, graphics, and started battle detection
+
 hartsp2000-05/24/2022-12:08-Version 0.0.0
   * Initial commit of framework, readme, and makefiles

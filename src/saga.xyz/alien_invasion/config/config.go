@@ -15,6 +15,7 @@ const (
 )
 
 var TITLE string = string(Cgreen) + "Alien Invasion - A Wargames Simulated Invasion" + string(Creset)
+var Log string
 
 // Configurable Options
 type T_Config struct {

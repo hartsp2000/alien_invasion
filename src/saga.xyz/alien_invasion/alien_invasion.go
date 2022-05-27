@@ -60,26 +60,43 @@ func CommandLineArgs() (conf config.T_Config) {
 
 func main() {
 	conf := CommandLineArgs()
-	battlefield, err := conf.Genesis()
-	if err != nil {
+	refresh, terr := time.ParseDuration(conf.Refresh)
+	if terr != nil {
+		panic(terr)
+	}
+
+	var battlefield actions.T_World
+	var err error
+
+	if err = battlefield.Genesis(conf); err != nil {
 		panic(err)
 	}
 
 	fmt.Println(config.TITLE)
+
 	if conf.ShowMap {
-		actions.DisplayWorld(battlefield, false)
+		battlefield.DisplayWorld(false)
 		fmt.Printf(string(config.Cgreen) + "Invasion Begins... Ships are landing...\n" + string(config.Creset))
-		refresh, err := time.ParseDuration(conf.Refresh)
-		if err != nil {
-			panic(err)
-		}
 		time.Sleep(refresh)
-		actions.DisplayWorld(battlefield, true)
+		battlefield.DisplayWorld(true)
 	}
 
 	// Let the battle begin
-	//for loop := 0; loop < conf.AllowedMoves; loop++ {
-	actions.CheckForDestruction(battlefield)
-	//}
+	for loop := 0; loop < conf.AllowedMoves; loop++ {
+		for !battlefield.CheckForDestruction() {
+		} // Make sure check completes before moving to next iteration
+		battlefield.Move()
+		if conf.ShowMap {
+			battlefield.DisplayWorld(true)
+		}
+		time.Sleep(refresh)
+	}
+
+	// The Apocalypse is OVER
+	if err = battlefield.PostApocalypse(conf); err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("The battle is over and perhaps it's time to find a new planet.  Please see results saved in: %s\n\n", conf.MapOutfile)
 
 }

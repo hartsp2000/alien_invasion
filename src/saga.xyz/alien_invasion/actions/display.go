@@ -5,7 +5,7 @@ import (
 	"saga.xyz/alien_invasion/config"
 )
 
-func DisplayWorld(w config.T_World, showAliens bool) {
+func (w *T_World) DisplayWorld(showAliens bool) {
 	// Clear Screen
 	fmt.Printf(string(config.Cls))
 	fmt.Println(config.TITLE)
@@ -20,9 +20,15 @@ func DisplayWorld(w config.T_World, showAliens bool) {
 	fmt.Printf("╗\n")
 
 	// Cities
-	for y := w.GridSize; y > 0; y-- {
+	for y := 0; y < w.GridSize; y++ {
 		fmt.Printf(string(config.Cblue) + "║")
 		for x := 0; x < w.GridSize; x++ {
+			road := ""
+			for _, r := range w.Traversible {
+				if r.X == x && r.Y == y {
+					road = "  +  "
+				}
+			}
 			city := w.Atlas[x][y]
 			if len(w.Atlas[x][y]) > 5 {
 				city = w.Atlas[x][y][:5]
@@ -34,7 +40,11 @@ func DisplayWorld(w config.T_World, showAliens bool) {
 					}
 				}
 			}
-			fmt.Printf(string(config.Cyellow)+"%5s"+string(config.Cblue), city)
+			if len(city) == 0 && len(road) > 0 {
+				fmt.Printf(string(config.Ccyan)+"%5s"+string(config.Cblue), road)
+			} else {
+				fmt.Printf(string(config.Cyellow)+"%5s"+string(config.Cblue), city)
+			}
 			if x < w.GridSize-1 {
 				fmt.Printf(" ║ ")
 			}
@@ -71,5 +81,5 @@ func DisplayWorld(w config.T_World, showAliens bool) {
 		}
 	}
 	fmt.Printf("╝" + string(config.Creset) + "\n")
-
+	fmt.Printf(config.Log)
 }
