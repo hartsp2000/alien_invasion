@@ -26,15 +26,19 @@ $ unset GOPATH
 TLDR; To build and run it:
 ----------------------------
 1. Build it from github cloned folder:
+
 $ make
 
 2. Run it FAST (without graphics for large worlds)
+
 $ bin/alien_invasion -refresh 1ns -aliens 6 -distance 3 -moves 10000
 
 3. Run it (with graphics for small worlds)
+
 $ bin/alien_invasion -refresh 150ms -aliens 6 -distance 3 -moves 500 -gfx
 
 4. Help (With explanation of all arguments (including input/output file options)
+
 $ bin/alien_invasion -help
 
 
