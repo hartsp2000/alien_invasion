@@ -3,11 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/hartsp2000/alien_invasion/actions"
+	"github.com/hartsp2000/alien_invasion/config"
+	"github.com/hartsp2000/alien_invasion/version"
 	"os"
-	"saga.xyz/alien_invasion/actions"
-	"saga.xyz/alien_invasion/config"
 	"time"
-	"version"
 )
 
 func DisplayVersion() {

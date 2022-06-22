@@ -2,8 +2,8 @@ package actions
 
 import (
 	"fmt"
-	"saga.xyz/alien_invasion/config"
-	"saga.xyz/alien_invasion/maths"
+	"github.com/hartsp2000/alien_invasion/config"
+	"github.com/hartsp2000/alien_invasion/maths"
 )
 
 func (w *T_World) CheckForCasualties() (completed bool) {

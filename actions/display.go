@@ -2,7 +2,7 @@ package actions
 
 import (
 	"fmt"
-	"saga.xyz/alien_invasion/config"
+	"github.com/hartsp2000/alien_invasion/config"
 )
 
 func (w *T_World) DisplayWorld(showAliens bool) {
