@@ -6,132 +6,64 @@ import (
 	"github.com/hartsp2000/alien_invasion/maths"
 )
 
-func (w *T_World) CheckForCasualties() (completed bool) {
-	for x, _ := range w.Atlas {
-		for y, _ := range w.Atlas[x] {
-			cityname := w.Atlas[x][y]
-			fighters := []int{}
-			for id, alien := range w.Invaders {
-				if alien.X == x && alien.Y == y {
-					fighters = append(fighters, id)
-				}
-				if len(fighters) > 1 {
-					// Destroy City
-					fmt.Printf("%s has been destroyed by: ", cityname)
-					config.Log += fmt.Sprintf("%s has been destroyed by: ", cityname)
-					for _, warrior := range fighters {
-						fmt.Printf(" Alien %d ", warrior)
-						config.Log += fmt.Sprintf(" Alien %d ", warrior)
+func (w *T_World) Fight() {
+	for x, _ := range w.Aliens {
+		for y, _ := range w.Aliens[x] {
+			fighters, _ := w.LookupAliens(x, y)
+			if len(fighters) > 1 {
+				_, cityname, found := w.LookupAtlas(x, y)
+				if found {
+					if cityname != "ROAD" {
+						msg := fmt.Sprintf("%s has been destroyed by: ", cityname)
+						for war, _ := range w.Aliens[x][y] {
+							msg += fmt.Sprintf("Alien %d (Species: %s)    ", fighters[war].AlienID, fighters[war].AlienSpecies)
+						}
+						msg += fmt.Sprintf("\n")
+						fmt.Printf(msg)
+						config.Log += msg
+						w.BreakRoad(x, y)
 					}
-					fmt.Printf("\n")
-					config.Log += fmt.Sprintf("\n")
-					w.Destroy(cityname)
-					return false
 				}
 			}
 		}
 	}
-	return true
+
 }
 
-// Assumption: A move off road is not allowed and is a lost/wasted turn
-func (w *T_World) Advance() {
+func (w *T_World) Iterate() {
 	var newpos int
+	for x, _ := range w.Aliens {
+		for y, _ := range w.Aliens[x] {
+			fighters, _ := w.LookupAliens(x, y)
+			for traveler, _ := range fighters {
+				switch direction := maths.RandBetween(1, 4); direction {
+				case 1: // Move North
+					newpos = y + 1
+					if w.OnRoad(x, newpos) {
+						w.MoveAlien(fighters[traveler].AlienID, x, y, x, newpos)
+					}
 
-	for id, _ := range w.Invaders {
-		direction := maths.RandBetween(1, 4) // 1 = North, 2 = South, 3 = East, 4 = West
-		if direction == 1 {
-			newpos = w.Invaders[id].Y + 1
-			if !w.OnRoad(w.Invaders[id].X, newpos) {
-				return
-			}
-			w.Invaders[id].Y = newpos
-		}
+				case 2: // Move South
+					newpos = y - 1
+					if w.OnRoad(x, newpos) {
+						w.MoveAlien(fighters[traveler].AlienID, x, y, x, newpos)
+					}
 
-		if direction == 2 {
-			newpos = w.Invaders[id].Y - 1
-			if !w.OnRoad(w.Invaders[id].X, newpos) {
-				return
-			}
-			w.Invaders[id].Y = newpos
-		}
+				case 3: // Move East
+					newpos = x + 1
+					if w.OnRoad(newpos, y) {
+						w.MoveAlien(fighters[traveler].AlienID, x, y, newpos, y)
+					}
 
-		if direction == 3 {
-			newpos = w.Invaders[id].X + 1
-			if !w.OnRoad(newpos, w.Invaders[id].Y) {
-				return
-			}
-			w.Invaders[id].X = newpos
-		}
+				case 4: // Move West
+					newpos = x - 1
+					if w.OnRoad(newpos, y) {
+						w.MoveAlien(fighters[traveler].AlienID, x, y, newpos, y)
+					}
 
-		if direction == 4 {
-			newpos = w.Invaders[id].X - 1
-			if !w.OnRoad(newpos, w.Invaders[id].Y) {
-				return
-			}
-			w.Invaders[id].X = newpos
-		}
-
-	}
-}
-
-func (w *T_World) Destroy(city string) {
-	var nw T_World
-
-	nw.Atlas = make(map[int]map[int]string, w.GridSize)
-	for i := 0; i < w.GridSize; i++ {
-		nw.Atlas[i] = make(map[int]string, w.GridSize)
-	}
-
-	for x, _ := range w.Atlas {
-		for y, _ := range w.Atlas[x] {
-			if city != w.Atlas[x][y] {
-				nw.Atlas[x][y] = w.Atlas[x][y]
-			} else {
-				w.BreakRoad(x, y)
+				default:
+				}
 			}
 		}
 	}
-
-	w.Atlas = nw.Atlas
-	delete(w.Cities, city)
-
-	for _, val := range w.CitiesRelativeTo {
-		tmp_city := val.City
-		tmp_north := val.North
-		tmp_south := val.South
-		tmp_east := val.East
-		tmp_west := val.West
-
-		if tmp_city == city {
-			continue
-		}
-
-		if tmp_north == city {
-			tmp_north = ""
-		}
-
-		if tmp_south == city {
-			tmp_south = ""
-		}
-
-		if tmp_east == city {
-			tmp_east = ""
-		}
-
-		if tmp_west == city {
-			tmp_west = ""
-		}
-
-		nw.CitiesRelativeTo = append(nw.CitiesRelativeTo, T_CityRelativeLocation{City: tmp_city,
-			North: tmp_north,
-			South: tmp_south,
-			East:  tmp_east,
-			West:  tmp_west})
-
-	}
-
-	w.CitiesRelativeTo = nw.CitiesRelativeTo
-
-	return
 }

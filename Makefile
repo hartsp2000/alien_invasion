@@ -24,7 +24,7 @@ vet:
 
 clean:
 	@echo "========== Cleaning artifacts =========="
-	@echo "Deleting generated binary files ..."; for binary in bin/alien_invasion ; do if [ -f "$${binary}" ]; then rm -f $${binary} && echo $${binary}; fi; done
+	@echo "Deleting generated binary files ..."; for binary in ${TARGETS}; do if [ -f "$${binary}" ]; then rm -f $${binary} && echo $${binary}; fi; done
 	@echo "Deleting generated version files ..."; for version_dir in /version ; do if [ -d "version" ]; then rm -Rf version && echo version; fi; done
 	echo "Deleting backup files: "
 	find . -name \*~ -exec rm -f {}  \;

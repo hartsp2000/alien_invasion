@@ -11,75 +11,72 @@ func (w *T_World) DisplayWorld(showAliens bool) {
 	fmt.Println(config.TITLE)
 	// Top Border
 	fmt.Printf(string(config.Cblue) + "╔")
-	for i := 0; i < w.GridSize; i++ {
+	for i := 0; i < w.GridSizeX; i++ {
 		fmt.Printf("═════")
-		if i < w.GridSize-1 {
+		if i < w.GridSizeX-1 {
 			fmt.Printf("═╦═")
 		}
 	}
 	fmt.Printf("╗\n")
 
 	// Cities
-	for y := 0; y < w.GridSize; y++ {
+	for y := w.GridSizeY - 1; y >= 0; y-- {
 		fmt.Printf(string(config.Cblue) + "║")
-		for x := 0; x < w.GridSize; x++ {
-			road := ""
-			for _, r := range w.Traversible {
-				if r.X == x && r.Y == y {
-					road = "  +  "
-				}
-			}
-			city := w.Atlas[x][y]
-			if len(w.Atlas[x][y]) > 5 {
-				city = w.Atlas[x][y][:5]
-			}
-			if showAliens {
-				for _, val := range w.Invaders {
-					if val.X == x && val.Y == y {
-						city = fmt.Sprintf(string(config.Cred)+"%5s"+string(config.Cblue), "!!")
+		for x := 0; x < w.GridSizeX; x++ {
+			block := ""
+			// Display Cities and Roads
+			_, data, found := w.LookupAtlas(x, y)
+			if found {
+				if data == "ROAD" {
+					block = fmt.Sprintf(string(config.Ccyan)+"%5s"+string(config.Cblue), "  +  ")
+				} else {
+					if len(data) < 5 {
+						block = fmt.Sprintf(string(config.Cyellow)+"%5s"+string(config.Cblue), data[:len(data)])
+					} else {
+						block = fmt.Sprintf(string(config.Cyellow)+"%5s"+string(config.Cblue), data[:5])
 					}
 				}
 			}
-			if len(city) == 0 && len(road) > 0 {
-				fmt.Printf(string(config.Ccyan)+"%5s"+string(config.Cblue), road)
-			} else {
-				fmt.Printf(string(config.Cyellow)+"%5s"+string(config.Cblue), city)
+
+			// Display Aliens
+			if showAliens {
+				aliens, found := w.LookupAliens(x, y)
+				if found {
+					block = fmt.Sprintf(string(config.Cred)+" (%d) "+string(config.Cblue), len(aliens))
+				}
 			}
-			if x < w.GridSize-1 {
+
+			fmt.Printf("%5s", block)
+
+			if x < w.GridSizeX-1 {
 				fmt.Printf(" ║ ")
 			}
 		}
+
 		fmt.Printf("║\n")
 
 		// Separator Line
-		fmt.Printf(string(config.Cblue) + "╟")
-		for i := 0; i < w.GridSize; i++ {
-			fmt.Printf("─────")
-			if i < w.GridSize-1 {
-				fmt.Printf("─╫─")
+		if y > 0 {
+			fmt.Printf(string(config.Cblue) + "╟")
+			for i := 0; i < w.GridSizeX; i++ {
+				fmt.Printf("─────")
+				if i < w.GridSizeX-1 {
+					fmt.Printf("─╫─")
+				}
 			}
-		}
-		fmt.Printf("╢\n")
-	}
-
-	// Empty Line
-	fmt.Printf("║")
-	for i := 0; i < w.GridSize; i++ {
-		fmt.Printf("     ")
-		if i < w.GridSize-1 {
-			fmt.Printf(" ║ ")
+			fmt.Printf("╢\n")
 		}
 	}
-	fmt.Printf("║\n")
 
 	// Bottom Border
 	fmt.Printf("╚")
-	for i := 0; i < w.GridSize; i++ {
+	for i := 0; i < w.GridSizeX; i++ {
 		fmt.Printf("═════")
-		if i < w.GridSize-1 {
+		if i < w.GridSizeX-1 {
 			fmt.Printf("═╩═")
 		}
 	}
 	fmt.Printf("╝" + string(config.Creset) + "\n")
 	fmt.Printf(config.Log)
+
 }

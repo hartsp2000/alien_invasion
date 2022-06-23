@@ -83,9 +83,8 @@ func main() {
 
 	// Let the battle begin
 	for loop := 0; loop < conf.AllowedMoves; loop++ {
-		for !battlefield.CheckForCasualties() {
-		} // Make sure check completes before moving to next iteration
-		battlefield.Advance()
+		battlefield.Fight()
+		battlefield.Iterate()
 		if conf.ShowMap {
 			battlefield.DisplayWorld(true)
 		}
