@@ -3,11 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/hartsp2000/alien_invasion/actions"
 	"github.com/hartsp2000/alien_invasion/config"
 	"github.com/hartsp2000/alien_invasion/version"
+	"github.com/hartsp2000/alien_invasion/world"
 	"os"
-	"time"
 )
 
 func DisplayVersion() {
@@ -32,7 +31,7 @@ func CommandLineArgs() (conf config.T_Config) {
 	var aliens = flag.Int("aliens", 2, "Size of alien army")
 	var allowedmoves = flag.Int("moves", 10000, "Maximum moves allowed by alien invaders")
 	var showmap = flag.Bool("gfx", false, "Show graphics of the world (ANSI terminal required / Not recommended for large worlds)")
-	var refresh = flag.String("refresh", "500ms", "Delay between moves")
+	var refresh = flag.String("refresh", "150ms", "Delay between moves")
 	var distance = flag.Int("distance", 2, "Maximum distance between cities")
 
 	flag.Parse()
@@ -60,42 +59,6 @@ func CommandLineArgs() (conf config.T_Config) {
 
 func main() {
 	conf := CommandLineArgs()
-	refresh, terr := time.ParseDuration(conf.Refresh)
-	if terr != nil {
-		panic(terr)
-	}
-
-	var battlefield actions.T_World
-	var err error
-
-	if err = battlefield.Genesis(conf); err != nil {
-		panic(err)
-	}
-
 	fmt.Println(config.TITLE)
-
-	if conf.ShowMap {
-		battlefield.DisplayWorld(false)
-		fmt.Printf(string(config.Cgreen) + "Invasion Begins... Ships are landing...\n" + string(config.Creset))
-		time.Sleep(refresh)
-		battlefield.DisplayWorld(true)
-	}
-
-	// Let the battle begin
-	for loop := 0; loop < conf.AllowedMoves; loop++ {
-		battlefield.Fight()
-		battlefield.Iterate()
-		if conf.ShowMap {
-			battlefield.DisplayWorld(true)
-		}
-		time.Sleep(refresh)
-	}
-
-	// The Apocalypse is OVER
-	if err = battlefield.PostApocalypse(conf); err != nil {
-		panic(err)
-	}
-
-	fmt.Printf("The battle is over and perhaps it's time to find a new planet.  Please see results saved in: %s\n\n", conf.MapOutfile)
-
+	world.RunSimulation(conf)
 }

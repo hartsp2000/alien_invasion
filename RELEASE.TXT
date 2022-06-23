@@ -1,3 +1,6 @@
+hartsp2000-06/23/2022-04:19-Version 0.2.2
+  * Additional refactoring, updated the output logging
+
 hartsp2000-06/23/2022-02:27-Version 0.2.1
   * Refactor data structures, Improve logic, Improve graphical interface
 

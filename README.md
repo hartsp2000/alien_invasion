@@ -10,6 +10,10 @@ If there is a compliation error: go/pkg/mod/golang.org/x/sys@(etc..etc..etc)/uni
 
 $ go get -u golang.org/x/sys
 
+If there is a compilation error: $GOPATH/go.mod exists but should not, unset the GOPATH:
+
+$ unset GOPATH
+
 TLDR; To build and run it:
 ----------------------------
 1. Build it from github cloned folder:
